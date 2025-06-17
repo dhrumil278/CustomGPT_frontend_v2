@@ -42,7 +42,7 @@ const ChatPreview = () => {
     if (!newMessage.trim() || isGenerating) return;
 
     const userMessage = {
-      type: 'human',
+      type: 'user',
       content: newMessage,
       timestamp: new Date().toLocaleString()
     };
@@ -54,7 +54,7 @@ const ChatPreview = () => {
     try {
       // Format chat history for API
       const chatHistory = messages.map(msg => ({
-        role: msg.type === 'human' ? 'human' : 'assistant',
+        role: msg.type === 'user' ? 'user' : 'assistant',
         content: msg.content
       }));
 
@@ -95,13 +95,13 @@ const ChatPreview = () => {
         mb: 2
       }}
     >
-      <Box sx={{ 
-        display: 'flex', 
+      <Box sx={{
+        display: 'flex',
         alignItems: 'center',
         mb: 0.5
       }}>
-        <Typography 
-          variant="caption" 
+        <Typography
+          variant="caption"
           color="text.secondary"
           sx={{ fontSize: '0.75rem' }}
         >
@@ -128,7 +128,7 @@ const ChatPreview = () => {
 
   return (
     <Container maxWidth="md" sx={{ height: '100%' }}>
-      <Box sx={{ 
+      <Box sx={{
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -147,7 +147,7 @@ const ChatPreview = () => {
           justifyContent: 'space-between'
         }}>
           <Typography variant="h6">Agent Preview</Typography>
-          <IconButton 
+          <IconButton
             onClick={() => {
               setMessages([{
                 type: 'assistant',
@@ -174,28 +174,28 @@ const ChatPreview = () => {
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: message.type === 'human' ? 'flex-end' : 'flex-start',
+                alignItems: message.type === 'user' ? 'flex-end' : 'flex-start',
                 mb: 2
               }}
             >
-              <Box sx={{ 
-                display: 'flex', 
+              <Box sx={{
+                display: 'flex',
                 alignItems: 'center',
                 mb: 0.5
               }}>
-                <Typography 
-                  variant="caption" 
+                <Typography
+                  variant="caption"
                   color="text.secondary"
                   sx={{ fontSize: '0.75rem' }}
                 >
-                  {message.type === 'human' ? 'You' : 'Agent'} • {message.timestamp}
+                  {message.type === 'user' ? 'You' : 'Agent'} • {message.timestamp}
                 </Typography>
               </Box>
               <Box sx={{
                 maxWidth: '70%',
                 p: 2,
-                bgcolor: message.type === 'human' ? 'primary.main' : 'background.paper',
-                color: message.type === 'human' ? 'common.white' : 'text.primary',
+                bgcolor: message.type === 'user' ? 'primary.main' : 'background.paper',
+                color: message.type === 'user' ? 'common.white' : 'text.primary',
                 borderRadius: 2,
                 boxShadow: 1
               }}>
@@ -217,7 +217,7 @@ const ChatPreview = () => {
           bgcolor: 'background.paper'
         }}>
           <form onSubmit={handleSendMessage}>
-            <Box sx={{ 
+            <Box sx={{
               display: 'flex',
               gap: 1
             }}>

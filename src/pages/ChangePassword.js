@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Paper,
+  Card,
+  CardContent,
   Typography,
   Button,
-  Grid
+  Grid,
+  Alert,
+  Snackbar,
+  LinearProgress,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
-import { toast } from 'react-hot-toast';
-import DashboardLayout from '../layouts/DashboardLayout';
-import PasswordField from '../components/form/PasswordField';
+import LockIcon from '@mui/icons-material/Lock';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { toast } from 'react-hot-toast';
+import axiosClient from '../api/axiosClient';
+import { backendRoute } from '../api/routeList';
+import PasswordField from '../components/form/PasswordField';
 
 const schema = yup.object().shape({
   currentPassword: yup.string().required('Current password is required'),
@@ -29,69 +37,190 @@ const schema = yup.object().shape({
     .required('Please confirm your password'),
 });
 
+const getPasswordStrength = (password) => {
+  if (!password) return 0;
+  let strength = 0;
+
+  // Length check
+  if (password.length >= 8) strength += 25;
+
+  // Character type checks
+  if (/[A-Z]/.test(password)) strength += 25;
+  if (/[a-z]/.test(password)) strength += 25;
+  if (/[0-9]/.test(password)) strength += 25;
+
+  return strength;
+};
+
+const getStrengthColor = (strength) => {
+  if (strength <= 25) return 'error';
+  if (strength <= 50) return 'warning';
+  if (strength <= 75) return 'info';
+  return 'success';
+};
+
+const getStrengthText = (strength) => {
+  if (strength <= 25) return 'Weak';
+  if (strength <= 50) return 'Fair';
+  if (strength <= 75) return 'Good';
+  return 'Strong';
+};
+
 const ChangePassword = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [loading, setLoading] = useState(false);
-  const { control, handleSubmit, reset } = useForm({
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const { control, handleSubmit, reset, watch } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const newPassword = watch('newPassword');
+
+  React.useEffect(() => {
+    setPasswordStrength(getPasswordStrength(newPassword));
+  }, [newPassword]);
 
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      // Add your API call here
+      await axiosClient.post(backendRoute.CHANGE_PASSWORD, {
+        password: data.newPassword,
+      });
+
       toast.success('Password updated successfully');
       reset();
+      setPasswordStrength(0);
     } catch (error) {
-      toast.error('Failed to update password');
+      toast.error(error.response?.data?.message || 'Failed to update password');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <DashboardLayout>
-      <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
-        <Typography variant="h5" gutterBottom>
-          Change Password
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
+    <Box
+      sx={{
+        p: { xs: 2, sm: 3 },
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'grey.50'
+      }}
+    >
+      <Card
+        elevation={3}
+        sx={{
+          width: '100%',
+          maxWidth: 600,
+          borderRadius: 2,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.05)'
+        }}
+      >
+        <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              mb: 4,
+              justifyContent: 'center'
+            }}
+          >
+            <LockIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+            <Typography
+              variant="h5"
+              component="h1"
+              sx={{
+                fontWeight: 600,
+                color: 'text.primary'
+              }}
+            >
+              Change Password
+            </Typography>
+          </Box>
+
+          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+            <Box display="flex" flexDirection="column" gap={1}>
               <PasswordField
                 name="currentPassword"
                 control={control}
                 label="Current Password"
+                fullWidth
               />
-            </Grid>
-            <Grid item xs={12}>
-              <PasswordField
-                name="newPassword"
-                control={control}
-                label="New Password"
-              />
-            </Grid>
-            <Grid item xs={12}>
+
+              <Box>
+                <PasswordField
+                  name="newPassword"
+                  control={control}
+                  label="New Password"
+                  fullWidth
+                />
+                {newPassword && (
+                  <Box sx={{ mt: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ mr: 1 }}
+                      >
+                        Password Strength:
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color={`${getStrengthColor(passwordStrength)}.main`}
+                        sx={{ fontWeight: 500 }}
+                      >
+                        {getStrengthText(passwordStrength)}
+                      </Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={passwordStrength}
+                      color={getStrengthColor(passwordStrength)}
+                      sx={{
+                        height: 4,
+                        borderRadius: 2,
+                        bgcolor: 'grey.200'
+                      }}
+                    />
+                  </Box>
+                )}
+              </Box>
+
               <PasswordField
                 name="confirmPassword"
                 control={control}
                 label="Confirm New Password"
+                fullWidth
               />
-            </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2
+                }}
+              >
                 <Button
                   variant="contained"
                   type="submit"
                   disabled={loading}
+                  fullWidth
+                  sx={{
+                    textTransform: 'none',
+                    px: 4
+                  }}
                 >
-                  Update Password
+                  Save Changes
                 </Button>
               </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </Paper>
-    </DashboardLayout>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

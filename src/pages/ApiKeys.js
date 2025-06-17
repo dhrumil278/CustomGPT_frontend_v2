@@ -24,6 +24,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AddIcon from '@mui/icons-material/Add';
+import KeyIcon from '@mui/icons-material/Key';
 import axiosClient from '../api/axiosClient';
 import { backendRoute } from '../api/routeList';
 
@@ -78,7 +79,7 @@ const ApiKeys = () => {
 
     const handleDeleteKey = async (apiKeyId) => {
         try {
-            await axiosClient.delete(`${backendRoute.DELETE_API_KEY}${apiKeyId}`);
+            await axiosClient.post(`${backendRoute.DELETE_API_KEY}${apiKeyId}`);
             setSnackbar({
                 open: true,
                 message: 'API key deleted successfully',
@@ -103,6 +104,12 @@ const ApiKeys = () => {
         });
     };
 
+    const maskApiKey = (key) => {
+        if (!key) return '';
+        const halfLength = Math.ceil(key.length / 2);
+        return `${key.slice(0, halfLength)}${'*'.repeat(key.length - halfLength)}`;
+    };
+
     return (
         <Box sx={{ p: 3 }}>
             <Card>
@@ -120,49 +127,85 @@ const ApiKeys = () => {
                         </Button>
                     </Box>
 
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Sr. No.</TableCell>
-                                    <TableCell>API Key</TableCell>
-                                    <TableCell>Created At</TableCell>
-                                    <TableCell>Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {apiKeys.map((key, index) => (
-                                    <TableRow key={key.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <Typography sx={{ fontFamily: 'monospace' }}>
-                                                    {key.apiKey}
-                                                </Typography>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => handleCopyKey(key.apiKey)}
-                                                >
-                                                    <ContentCopyIcon fontSize="small" />
-                                                </IconButton>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>
-                                            {new Date(key.createdAt).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell>
-                                            <IconButton
-                                                color="error"
-                                                onClick={() => handleDeleteKey(key.id)}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
+                    {apiKeys.length === 0 ? (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                py: 8,
+                                px: 2,
+                                textAlign: 'center',
+                            }}
+                        >
+                            <KeyIcon
+                                sx={{
+                                    fontSize: 64,
+                                    color: 'text.secondary',
+                                    mb: 2,
+                                }}
+                            />
+                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                                No API Keys Found
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 400 }}>
+                                Generate your first API key to start integrating with our services. API keys are used to authenticate your requests.
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={() => setOpenDialog(true)}
+                            >
+                                Generate New Key
+                            </Button>
+                        </Box>
+                    ) : (
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell sx={{ width: '10%' }}>API Key</TableCell>
+                                        <TableCell>Created At</TableCell>
+                                        <TableCell>Actions</TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                </TableHead>
+                                <TableBody>
+                                    {apiKeys.map((key) => (
+                                        <TableRow key={key.id}>
+                                            <TableCell>{key.name}</TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Typography sx={{ fontFamily: 'monospace' }}>
+                                                        {maskApiKey(key.apiKey)}
+                                                    </Typography>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleCopyKey(key.apiKey)}
+                                                        title="Copy full API key"
+                                                    >
+                                                        <ContentCopyIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell>
+                                                {new Date(key.createdAt).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell>
+                                                <IconButton
+                                                    color="error"
+                                                    onClick={() => handleDeleteKey(key._id)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    )}
                 </CardContent>
             </Card>
 

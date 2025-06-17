@@ -52,7 +52,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
     backgroundColor: theme.palette.action.selected,
     '& .MuiSvgIcon-root': {
       color: theme.palette.primary.main,
-    }
+    },
   },
   '& .MuiSvgIcon-root': {
     fontSize: 24,
@@ -63,7 +63,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
     backgroundColor: theme.palette.action.hover,
     '& .MuiSvgIcon-root': {
       color: theme.palette.primary.main,
-    }
+    },
   },
   transition: 'all 0.2s ease-in-out',
 }));
@@ -111,8 +111,9 @@ const BotPreview = () => {
       </Typography>
 
       <Typography variant="body1" paragraph>
-        Integrate your AI bot seamlessly into your website or application using our simple REST API.
-        This guide will walk you through the process of setting up and using the API.
+        Integrate your AI bot seamlessly into your website or application using
+        our simple REST API. This guide will walk you through the process of
+        setting up and using the API.
       </Typography>
 
       <Box sx={{ mb: 4 }}>
@@ -170,7 +171,11 @@ const BotPreview = () => {
             </ListItemIcon>
             <ListItemText
               primary="2. Set Up API Endpoint"
-              secondary={`Use the endpoint: ${process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : 'http://localhost:8080'}/qa/askquestion`}
+              secondary={`Use the endpoint: ${
+                process.env.REACT_APP_API_BASE_URL
+                  ? process.env.REACT_APP_API_BASE_URL
+                  : 'http://localhost:8080'
+              }/qa/askquestion`}
             />
           </ListItem>
           <ListItem>
@@ -193,7 +198,11 @@ const BotPreview = () => {
           Endpoint
         </Typography>
         <CodeBlock>
-          {`POST ${process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : 'http://localhost:8080'}/qa/askquestion`}
+          {`POST ${
+            process.env.REACT_APP_API_BASE_URL
+              ? process.env.REACT_APP_API_BASE_URL
+              : 'http://localhost:8080'
+          }/qa/askquestion`}
         </CodeBlock>
 
         <Typography variant="subtitle2" gutterBottom>
@@ -209,19 +218,19 @@ apiKey: your_api_key_here`}
         </Typography>
         <CodeBlock>
           {`{
-  "botId": "your_bot_id",
-  "chatHistory": [
-    {
-      "role": "human",
-      "content": "Previous user message"
-    },
-    {
-      "role": "assistant",
-      "content": "Previous bot response"
-    }
-  ],
-  "question": "User's current question"
-}`}
+              "botId": "your_bot_id",
+              "chatHistory": [
+                {
+                  "role": "user",
+                  "content": "Previous user message"
+                },
+                {
+                  "role": "assistant",
+                  "content": "Previous bot response"
+                }
+              ],
+              "question": "User's current question"
+            }`}
         </CodeBlock>
       </Box>
 
@@ -234,7 +243,11 @@ apiKey: your_api_key_here`}
         </Typography>
         <CodeBlock>
           {`async function askBot(question, chatHistory = []) {
-  const response = await fetch('${process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : 'http://localhost:8080'}/qa/askquestion', {
+  const response = await fetch('${
+    process.env.REACT_APP_API_BASE_URL
+      ? process.env.REACT_APP_API_BASE_URL
+      : 'http://localhost:8080'
+  }/qa/askquestion', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -342,28 +355,36 @@ apiKey: your_api_key_here`}
           >
             <Tab icon={<SourceIcon />} label="Sources" iconPosition="start" />
             <Tab icon={<PreviewIcon />} label="Preview" iconPosition="start" />
-            <Tab icon={<CodeIcon />} label="Documentation" iconPosition="start" />
+            <Tab
+              icon={<CodeIcon />}
+              label="Documentation"
+              iconPosition="start"
+            />
           </Tabs>
         </Box>
 
-        <Box sx={{
-          flex: 1,
-          mt: 2,
-          display: 'flex',
-        }}>
+        <Box
+          sx={{
+            flex: 1,
+            mt: 2,
+            display: 'flex',
+          }}
+        >
           {activeTab === 0 && (
             <>
-              <Box sx={{
-                width: 280,
-                borderRight: 1,
-                borderColor: 'divider',
-                bgcolor: 'background.paper',
-                '& .MuiTabs-indicator': {
-                  left: 0,
-                  width: 3,
-                  backgroundColor: theme.palette.primary.main,
-                },
-              }}>
+              <Box
+                sx={{
+                  width: 280,
+                  borderRight: 1,
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  '& .MuiTabs-indicator': {
+                    left: 0,
+                    width: 3,
+                    backgroundColor: theme.palette.primary.main,
+                  },
+                }}
+              >
                 <Tabs
                   orientation="vertical"
                   value={activeSource}
@@ -396,35 +417,41 @@ apiKey: your_api_key_here`}
                 </Tabs>
               </Box>
 
-              <Box sx={{
-                flexGrow: 1,
-                bgcolor: 'background.paper',
-                overflow: 'auto',
-                p: 4,
-              }}>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  bgcolor: 'background.paper',
+                  overflow: 'auto',
+                  p: 4,
+                }}
+              >
                 {renderSourceContent()}
               </Box>
             </>
           )}
 
           {activeTab === 1 && (
-            <Box sx={{
-              p: 3,
-              width: '100%',
-              height: '100%',
-              bgcolor: '#F8F9FA'
-            }}>
+            <Box
+              sx={{
+                p: 3,
+                width: '100%',
+                height: '100%',
+                bgcolor: '#F8F9FA',
+              }}
+            >
               <ChatPreview />
             </Box>
           )}
 
           {activeTab === 2 && (
-            <Box sx={{
-              width: '100%',
-              height: '100%',
-              bgcolor: 'background.paper',
-              overflow: 'auto',
-            }}>
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                bgcolor: 'background.paper',
+                overflow: 'auto',
+              }}
+            >
               {renderDocumentation()}
             </Box>
           )}
@@ -434,4 +461,4 @@ apiKey: your_api_key_here`}
   );
 };
 
-export default BotPreview; 
+export default BotPreview;

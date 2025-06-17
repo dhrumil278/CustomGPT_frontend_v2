@@ -1,6 +1,5 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
-console.log('process.env.REACT_APP_API_BASE_URL', process.env.REACT_APP_API_BASE_URL);
 
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080',
@@ -28,7 +27,7 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const message = error.response?.data?.message || 'An error occurred';
-    
+
     // Handle different error status codes
     switch (error.response?.status) {
       case 401:
@@ -45,9 +44,9 @@ axiosClient.interceptors.response.use(
       default:
         toast.error(message);
     }
-    
+
     return Promise.reject(error);
   }
 );
 
-export default axiosClient; 
+export default axiosClient;

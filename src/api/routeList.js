@@ -6,6 +6,7 @@ export const backendRoute = {
   USER_VERIFY_FORGOT_PASSWORD: '/user/verifyForgotEmail',
   USER_RESET_PASSWORD: '/user/changeForgotPassword',
   USER_VERIFY_EMAIL: '/user/emailVerification',
+  CHANGE_PASSWORD: '/user/changePassword',
 
   // API Key Routes
   LIST_API_KEYS: '/apikey/listAPIKey',

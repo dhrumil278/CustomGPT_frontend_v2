@@ -52,7 +52,7 @@ const DashboardLayout = ({ children }) => {
             }}
             onClick={() => navigate('/dashboard')}
           >
-            AiBots
+            AiDee
           </Typography>
           <IconButton
             size="large"
@@ -74,14 +74,12 @@ const DashboardLayout = ({ children }) => {
               horizontal: 'right',
             }}
           >
-            <MenuItem onClick={() => handleNavigation('/user-profile')}>
-              User Profile
+
+            <MenuItem onClick={() => handleNavigation('/api-keys')}>
+              Generate API Keys
             </MenuItem>
             <MenuItem onClick={() => handleNavigation('/change-password')}>
               Change Password
-            </MenuItem>
-            <MenuItem onClick={() => handleNavigation('/api-keys')}>
-              Generate API Keys
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               Logout
